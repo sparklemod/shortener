@@ -23,7 +23,7 @@ func (uc *Usecase) CreateLink(ctx context.Context, in dto.CreateLink) (string, e
 	}
 	link := domain.CreateLink{
 		OriginalLink: in.OriginalLink,
-		RedirectLink: code,
+		RedirectLink: code, //TODO настроить чтобы был уникальным, в сервисе секать доступность а потом генерить
 	}
 
 	id, err := uc.repo.CreateLink(ctx, link)

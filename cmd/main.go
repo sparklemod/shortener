@@ -15,4 +15,6 @@ func main() {
 	if err := application.Run(":8080"); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
+
+	//TODO завести контекст и передавать в Run
 }

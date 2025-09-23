@@ -11,7 +11,7 @@ type PostgresDataBase struct {
 func NewConfig() *Config {
 	return &Config{
 		LinksDB: PostgresDataBase{
-			URL: "postgres://postgres:postgres@localhost:54302/postgres?sslmode=disable",
+			URL: "postgres://user:password@localhost:54302/shortener?sslmode=disable",
 		},
 	}
 }

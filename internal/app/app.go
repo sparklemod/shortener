@@ -22,6 +22,7 @@ func Build(cfg *config.Config) (*App, error) {
 	if err := pg.Connect(ctx); err != nil {
 		return nil, err
 	}
+
 	repo := repopg.NewPostgres(pg)
 	uc := usecase.New(repo)
 	srv := httptransport.New(uc)

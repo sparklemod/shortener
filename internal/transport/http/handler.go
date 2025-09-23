@@ -39,17 +39,36 @@ func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {
 	if err := srv.ParseData(c, &reqData); err != nil {
 		return
 	}
-	userID, ok := srv.userIDFromHeader(c)
-	if !ok {
-		return
-	}
+	//userID, ok := srv.userIDFromHeader(c)
+	//if !ok {
+	//	return
+	//}
 	id, err := srv.uc.CreateLink(c, dto.CreateLink{
-		OriginalLink: reqData.Name
-		 R: reqData.Redirect,
+		OriginalLink: reqData.Name,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, RequestStatus{Status: http.StatusInternalServerError, Desc: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, CreateLinkResponse{RequestStatus: RequestStatus{Status: http.StatusOK, Desc: "ok"}, Data: CreateLinkResponseData{ID: id}})
+}
+
+// TODO вынести в отд папки
+type CreateLinkRequest struct {
+	Name     string `json:"name"`
+	Redirect string `json:"redirect,omitempty"`
+}
+
+type RequestStatus struct {
+	Status int    `json:"status"`
+	Desc   string `json:"desc"`
+}
+
+type CreateLinkResponseData struct {
+	ID string `json:"id"`
+}
+
+type CreateLinkResponse struct {
+	RequestStatus RequestStatus          `json:"status"`
+	Data          CreateLinkResponseData `json:"data"`
 }
