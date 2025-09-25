@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"shortener/internal/repository/domain"
 	"shortener/internal/usecase/dto"
@@ -17,13 +18,35 @@ func New(repo Repository) *Usecase {
 }
 
 func (uc *Usecase) CreateLink(ctx context.Context, in dto.CreateLink) (string, error) {
-	code, err := utils.GenerateBase58String(8)
-	if err != nil {
-		return "", err
+	var code string
+	var err error
+	attempts := 3
+
+	for {
+		if attempts == 0 {
+			return "", errors.New("не удалось создать ссылку")
+		}
+
+		code, err = utils.GenerateBase58String(8)
+		if err != nil {
+			return "", err
+		}
+
+		isExist, err := uc.repo.CheckLinkIfExist(ctx, code)
+		if err != nil {
+			return "", err
+		}
+
+		if !isExist {
+			break
+		}
+
+		attempts--
 	}
+
 	link := domain.CreateLink{
 		OriginalLink: in.OriginalLink,
-		RedirectLink: code, //TODO настроить чтобы был уникальным, в сервисе секать доступность а потом генерить
+		RedirectLink: code,
 	}
 
 	id, err := uc.repo.CreateLink(ctx, link)

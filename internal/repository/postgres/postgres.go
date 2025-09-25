@@ -27,3 +27,15 @@ func (p *Postgres) CreateLink(ctx context.Context, link domain.CreateLink) (stri
 
 	return id, nil
 }
+
+func (p *Postgres) CheckLinkIfExist(ctx context.Context, redirectLink string) (bool, error) {
+	const query = `
+		SELECT EXISTS(SELECT 1 FROM links WHERE redirect_link = $1)
+	`
+	var isExists bool
+	if err := p.conn.Pool.QueryRow(ctx, query, redirectLink).Scan(&isExists); err != nil {
+		return false, err
+	}
+
+	return isExists, nil
+}
