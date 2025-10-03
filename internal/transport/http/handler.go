@@ -25,8 +25,8 @@ func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {
 		return
 	}
 
-	id, err := srv.uc.CreateLink(c, model.CreateLinkRequest{
-		OriginalUrl: reqData.Name,
+	link, err := srv.uc.CreateLink(c, model.CreateLinkRequest{
+		OriginalUrl: reqData.Url,
 	})
 
 	if err != nil {
@@ -37,6 +37,6 @@ func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, CreateLinkResponse{
 		RequestStatus: RequestStatus{Status: http.StatusOK, Description: "ok"},
-		Data:          CreateLinkResponseData{ID: id.Id},
+		Data:          CreateLinkResponseData{ShortenedUrl: link.RedirectUrl},
 	})
 }

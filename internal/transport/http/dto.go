@@ -5,13 +5,13 @@ type RequestStatus struct {
 	Description string `json:"description"`
 }
 
+// todo тест при котором нет урла
 type CreateLinkRequest struct {
-	Name     string `json:"name"`
-	Redirect string `json:"redirect,omitempty"`
+	Url string `json:"url" validate:"required,url"`
 }
 
 type CreateLinkResponseData struct {
-	ID int `json:"id"`
+	ShortenedUrl string `json:"shortened_url,omitempty"`
 }
 
 type CreateLinkResponse struct {
