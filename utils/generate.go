@@ -7,7 +7,7 @@ import (
 
 const base58Alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
-func GenerateBase58String(length int) (string, error) {
+func GenerateShortLink(length int) (string, error) {
 	res := make([]byte, length)
 	aplahabetLen := big.NewInt(int64(len(base58Alphabet)))
 

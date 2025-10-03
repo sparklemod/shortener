@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestGenerateBase58String(t *testing.T) {
+func TestGenerateShortLink(t *testing.T) {
 	t.Run("returns an base58 string", func(t *testing.T) {
 		testCases := []struct {
 			length   int
@@ -16,7 +16,7 @@ func TestGenerateBase58String(t *testing.T) {
 		}
 
 		for _, testCase := range testCases {
-			got, err := GenerateBase58String(testCase.length)
+			got, err := GenerateShortLink(testCase.length)
 			if err != nil {
 				t.Error(err)
 			}
@@ -31,7 +31,7 @@ func TestGenerateBase58String(t *testing.T) {
 	t.Run("is randomness", func(t *testing.T) {
 		results := make(map[string]bool)
 		for i := 0; i < 100; i++ {
-			s, err := GenerateBase58String(1)
+			s, err := GenerateShortLink(1)
 			if err != nil {
 				t.Errorf("unexpected error generating string: %v", err)
 				continue
