@@ -2,9 +2,9 @@ package http
 
 import (
 	"context"
-	"shortener/internal/usecase/dto"
+	"shortener/internal/model"
 )
 
 type UseCase interface {
-	CreateLink(ctx context.Context, link dto.CreateLink) (id string, err error)
+	CreateLink(ctx context.Context, link model.CreateLinkRequest) (link2 *model.Link, err error)
 }

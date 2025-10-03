@@ -11,7 +11,7 @@ type CreateLinkRequest struct {
 }
 
 type CreateLinkResponseData struct {
-	ID string `json:"id"`
+	ID int `json:"id"`
 }
 
 type CreateLinkResponse struct {

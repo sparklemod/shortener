@@ -3,9 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
-
-	"shortener/internal/repository/domain"
-	"shortener/internal/usecase/dto"
+	"shortener/internal/model"
 	"shortener/utils"
 )
 
@@ -17,41 +15,29 @@ func New(repo Repository) *Usecase {
 	return &Usecase{repo: repo}
 }
 
-func (uc *Usecase) CreateLink(ctx context.Context, in dto.CreateLink) (string, error) {
-	var code string
-	var err error
-	attempts := 3
-
-	for {
-		if attempts == 0 {
-			return "", errors.New("не удалось создать ссылку")
-		}
-
-		code, err = utils.GenerateBase58String(8)
+func (uc *Usecase) CreateLink(ctx context.Context, in model.CreateLinkRequest) (*model.Link, error) {
+	for attempts := 3; attempts > 0; attempts-- {
+		redirectUrl, err := utils.GenerateShortLink(8)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 
-		isExist, err := uc.repo.CheckLinkIfExist(ctx, code)
-		if err != nil {
-			return "", err
+		inputLink := model.Link{
+			OriginalUrl: in.OriginalUrl,
+			RedirectUrl: redirectUrl,
 		}
 
-		if !isExist {
-			break
+		link, err := uc.repo.Post(ctx, inputLink)
+		if err == nil {
+			return link, nil
 		}
 
-		attempts--
+		if errors.Is(err, model.ErrorNonUniq) {
+			continue
+		}
+
+		return nil, err
 	}
 
-	link := domain.CreateLink{
-		OriginalLink: in.OriginalLink,
-		RedirectLink: code,
-	}
-
-	id, err := uc.repo.CreateLink(ctx, link)
-	if err != nil {
-		return "", err
-	}
-	return id, nil
+	return nil, model.ErrorAttemptsExhausted
 }

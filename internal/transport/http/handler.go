@@ -2,8 +2,7 @@ package http
 
 import (
 	"net/http"
-
-	"shortener/internal/usecase/dto"
+	"shortener/internal/model"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,9 +25,10 @@ func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {
 		return
 	}
 
-	id, err := srv.uc.CreateLink(c, dto.CreateLink{
-		OriginalLink: reqData.Name,
+	id, err := srv.uc.CreateLink(c, model.CreateLinkRequest{
+		OriginalUrl: reqData.Name,
 	})
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError,
 			RequestStatus{Status: http.StatusInternalServerError, Description: err.Error()})
@@ -37,6 +37,6 @@ func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, CreateLinkResponse{
 		RequestStatus: RequestStatus{Status: http.StatusOK, Description: "ok"},
-		Data:          CreateLinkResponseData{ID: id},
+		Data:          CreateLinkResponseData{ID: id.Id},
 	})
 }

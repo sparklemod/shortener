@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type Postgres struct {
@@ -22,7 +22,7 @@ func (pg *Postgres) Connect(ctx context.Context) error {
 		return err
 	}
 
-	pool, err := pgxpool.NewWithConfig(ctx, cfg)
+	pool, err := pgxpool.ConnectConfig(ctx, cfg)
 	if err != nil {
 		return err
 	}

@@ -2,10 +2,9 @@ package usecase
 
 import (
 	"context"
-	"shortener/internal/repository/domain"
+	"shortener/internal/model"
 )
 
 type Repository interface {
-	CreateLink(ctx context.Context, link domain.CreateLink) (string, error)
-	CheckLinkIfExist(ctx context.Context, RedirectLink string) (isExists bool, err error)
+	Post(ctx context.Context, link model.Link) (*model.Link, error)
 }
