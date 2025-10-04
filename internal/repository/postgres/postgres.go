@@ -23,13 +23,13 @@ func (p *Postgres) Post(ctx context.Context, link model.Link) (*model.Link, erro
 	//link.CreatedAt = time.Now().UTC()
 
 	const query = `
-		INSERT INTO links (original_url, redirect_url) 
+		INSERT INTO links (original_url, shorten_url) 
 		VALUES ($1, $2)
-		ON CONFLICT (redirect_url) DO NOTHING
+		ON CONFLICT (shorten_url) DO NOTHING
 		RETURNING *;
 	`
 	var result model.Link
-	err := pgxscan.Get(ctx, p.conn.Pool, &result, query, link.OriginalUrl, link.RedirectUrl)
+	err := pgxscan.Get(ctx, p.conn.Pool, &result, query, link.OriginalUrl, link.ShortenUrl)
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, model.ErrorNonUniq

@@ -1,7 +1,3 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=GoLand
-
 ### POST /api/v1/links/create
 POST http://localhost:8080/api/v1/links/create
 Content-Type: application/json
@@ -9,3 +5,7 @@ Content-Type: application/json
 {
   "url": "http://habr.com/"
 }
+
+### GET /api/v1/links/:shorten-url
+GET http://localhost:8080/api/v1/links/MEWooaGf
+Content-Type: application/json

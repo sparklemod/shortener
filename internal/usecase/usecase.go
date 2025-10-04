@@ -17,14 +17,14 @@ func New(repo Repository) *Usecase {
 
 func (uc *Usecase) CreateLink(ctx context.Context, in model.CreateLinkRequest) (*model.Link, error) {
 	for attempts := 3; attempts > 0; attempts-- {
-		redirectUrl, err := utils.GenerateShortLink(8)
+		shortenUrl, err := utils.GenerateShortLink(8)
 		if err != nil {
 			return nil, err
 		}
 
 		inputLink := model.Link{
 			OriginalUrl: in.OriginalUrl,
-			RedirectUrl: redirectUrl,
+			ShortenUrl:  shortenUrl,
 		}
 
 		link, err := uc.repo.Post(ctx, inputLink)
