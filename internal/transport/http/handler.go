@@ -58,3 +58,30 @@ func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {
 		},
 	})
 }
+
+func (srv *HttpServer) RedirectHandler(c *gin.Context) {
+	identifier := c.Param("shorten-url")
+
+	redirectUrl, err := srv.uc.Redirect(c, identifier)
+	if err != nil {
+		if errors.Is(err, model.ErrorNotFound) {
+			c.JSON(http.StatusNotFound,
+				RequestStatus{
+					Status:      http.StatusNotFound,
+					Description: err.Error(),
+				})
+			return
+		}
+
+		log.Printf("error getting redirect url for %q: %v", identifier, err)
+
+		c.JSON(http.StatusInternalServerError,
+			RequestStatus{
+				Status:      http.StatusInternalServerError,
+				Description: err.Error(),
+			})
+		return
+	}
+
+	c.Redirect(http.StatusMovedPermanently, redirectUrl)
+}

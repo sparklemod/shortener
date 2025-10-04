@@ -32,5 +32,6 @@ func (s *HttpServer) setupRoutes() {
 	links := api.Group("/links")
 	{
 		links.POST("create", s.CreateLinkHandler)
+		links.GET("/:shorten-url", s.RedirectHandler)
 	}
 }

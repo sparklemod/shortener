@@ -42,6 +42,39 @@ func (p *Postgres) Post(ctx context.Context, link model.Link) (*model.Link, erro
 	return &result, nil
 }
 
+func (p *Postgres) Get(ctx context.Context, shortenUrl string) (string, error) {
+	const query = `
+		SELECT original_url FROM links 
+		WHERE shorten_url = $1
+	`
+	var result string
+	err := p.conn.Pool.QueryRow(ctx, query, shortenUrl).Scan(&result)
+
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", model.ErrorNotFound
+	}
+
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
+}
+
+func (p *Postgres) IncrementVisits(ctx context.Context, shortenUrl string) error {
+	const query = `
+		UPDATE links 
+		SET visits = visits + 1 
+		WHERE shorten_url = $1;
+	`
+	_, err := p.conn.Pool.Exec(ctx, query, shortenUrl)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type pgShortening struct {
 	Identifier  int       `bson:"_id"`
 	OriginalURL string    `bson:"original_url"`

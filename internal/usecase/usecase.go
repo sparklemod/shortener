@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"log"
 	"shortener/internal/model"
 	"shortener/utils"
 )
@@ -40,4 +41,17 @@ func (uc *Usecase) CreateLink(ctx context.Context, in model.CreateLinkRequest) (
 	}
 
 	return nil, model.ErrorAttemptsExhausted
+}
+
+func (uc *Usecase) Redirect(ctx context.Context, shortenUrl string) (string, error) {
+	shortening, err := uc.repo.Get(ctx, shortenUrl)
+	if err != nil {
+		return "", err
+	}
+
+	if err := uc.repo.IncrementVisits(ctx, shortenUrl); err != nil {
+		log.Printf("failed to increment visits for %q: %v", shortenUrl, err)
+	}
+
+	return shortening, nil
 }
