@@ -1,4 +1,4 @@
-package postgres
+package repository
 
 import (
 	"context"
@@ -20,8 +20,6 @@ func NewPostgres(conn *adapterpg.Postgres) *Postgres {
 }
 
 func (p *Postgres) Post(ctx context.Context, link model.Link) (*model.Link, error) {
-	//link.CreatedAt = time.Now().UTC()
-
 	const query = `
 		INSERT INTO links (original_url, shorten_url) 
 		VALUES ($1, $2)
@@ -67,6 +65,7 @@ func (p *Postgres) IncrementVisits(ctx context.Context, shortenUrl string) error
 		SET visits = visits + 1 
 		WHERE shorten_url = $1;
 	`
+
 	_, err := p.conn.Pool.Exec(ctx, query, shortenUrl)
 	if err != nil {
 		return err

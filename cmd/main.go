@@ -1,20 +1,24 @@
 package main
 
 import (
+	"context"
 	"log"
+	"os/signal"
 	"shortener/config"
 	"shortener/internal/app"
+	"syscall"
 )
 
 func main() {
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
 	cfg := config.NewConfig()
-	application, err := app.Build(cfg)
+	application, err := app.Build(ctx, cfg)
 	if err != nil {
 		log.Fatalf("failed to build app: %v", err)
 	}
-	if err := application.Run(":8080"); err != nil {
+	if err := application.Run(ctx, cfg); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
-
-	//TODO завести контекст и передавать в Run
 }
