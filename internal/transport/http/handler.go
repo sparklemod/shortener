@@ -38,7 +38,6 @@ func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {
 	link, err := srv.uc.CreateLink(c, model.CreateLinkRequest{
 		OriginalUrl: reqData.Url,
 	})
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError,
 			RequestStatus{
@@ -60,9 +59,9 @@ func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {
 }
 
 func (srv *HttpServer) RedirectHandler(c *gin.Context) {
-	identifier := c.Param("shorten-url")
+	shortenUrl := c.Param("shorten-url")
 
-	redirectUrl, err := srv.uc.Redirect(c, identifier)
+	redirectUrl, err := srv.uc.Redirect(c, shortenUrl)
 	if err != nil {
 		if errors.Is(err, model.ErrorNotFound) {
 			c.JSON(http.StatusNotFound,
@@ -73,8 +72,7 @@ func (srv *HttpServer) RedirectHandler(c *gin.Context) {
 			return
 		}
 
-		log.Printf("error getting redirect url for %q: %v", identifier, err)
-
+		log.Printf("error getting redirect url for %q: %v", shortenUrl, err)
 		c.JSON(http.StatusInternalServerError,
 			RequestStatus{
 				Status:      http.StatusInternalServerError,

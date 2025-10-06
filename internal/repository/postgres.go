@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"log"
 	adapterpg "shortener/internal/adapter/postgres"
 	"shortener/internal/model"
 	"time"
@@ -68,7 +69,8 @@ func (p *Postgres) IncrementVisits(ctx context.Context, shortenUrl string) error
 
 	_, err := p.conn.Pool.Exec(ctx, query, shortenUrl)
 	if err != nil {
-		return err
+		log.Printf("failed to increment visits for %q: %v", shortenUrl, err)
+		return model.ErrorIncrementVisits
 	}
 
 	return nil

@@ -9,6 +9,7 @@ var (
 	ErrorNotFound          = errors.New("not found")
 	ErrorNonUniq           = errors.New("shorten link already exists")
 	ErrorAttemptsExhausted = errors.New("failed to create uniq link")
+	ErrorIncrementVisits   = errors.New("failed to increment visits")
 )
 
 type Link struct {

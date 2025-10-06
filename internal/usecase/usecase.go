@@ -3,10 +3,11 @@ package usecase
 import (
 	"context"
 	"errors"
-	"log"
 	"shortener/internal/model"
 	"shortener/utils"
 )
+
+const ShortenLength = 8
 
 type Usecase struct {
 	repo Repository
@@ -18,7 +19,7 @@ func New(repo Repository) *Usecase {
 
 func (uc *Usecase) CreateLink(ctx context.Context, in model.CreateLinkRequest) (*model.Link, error) {
 	for attempts := 3; attempts > 0; attempts-- {
-		shortenUrl, err := utils.GenerateShortLink(8)
+		shortenUrl, err := utils.GenerateShortLink(ShortenLength)
 		if err != nil {
 			return nil, err
 		}
@@ -49,9 +50,7 @@ func (uc *Usecase) Redirect(ctx context.Context, shortenUrl string) (string, err
 		return "", err
 	}
 
-	if err := uc.repo.IncrementVisits(ctx, shortenUrl); err != nil {
-		log.Printf("failed to increment visits for %q: %v", shortenUrl, err)
-	}
+	uc.repo.IncrementVisits(ctx, shortenUrl)
 
 	return shortening, nil
 }
