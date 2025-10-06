@@ -18,7 +18,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to build app: %v", err)
 	}
-	if err := application.Run(ctx, cfg); err != nil {
-		log.Fatalf("server error: %v", err)
-	}
+	application.Run()
+
+	<-ctx.Done()
+	application.Stop()
 }

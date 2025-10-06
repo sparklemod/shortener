@@ -2,10 +2,7 @@ package app
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"log"
-	"net/http"
 	"shortener/config"
 	adapterpg "shortener/internal/adapter/postgres"
 	repopg "shortener/internal/repository"
@@ -27,39 +24,24 @@ func Build(ctx context.Context, cfg *config.Config) (*App, error) {
 
 	repo := repopg.NewPostgres(pg)
 	uc := usecase.New(repo)
-	srv := httptransport.New(uc)
+	srv := httptransport.New(uc, cfg)
 
 	return &App{server: srv, pg: pg}, nil
 }
 
-func (a *App) Run(ctx context.Context, cfg *config.Config) error {
-	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
-	httpSrv := &http.Server{
-		Addr:    addr,
-		Handler: a.server.Router(),
-	}
+func (a *App) Run() {
+	a.server.Run()
+}
 
-	go func() {
-		log.Printf("starting HTTP server on %s", addr)
-		if err := httpSrv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("listen: %s\n", err)
-		}
-	}()
-
-	<-ctx.Done()
-
+func (a *App) Stop() {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	log.Println("shutting down HTTP server...")
-	if err := httpSrv.Shutdown(shutdownCtx); err != nil {
-		log.Fatalf("error closing server: %v", err)
-		return err
-	}
+	a.server.Stop(shutdownCtx)
 
 	log.Println("closing DB connection...")
 	a.pg.Close()
 
 	log.Println("server stopped")
-	return nil
 }
