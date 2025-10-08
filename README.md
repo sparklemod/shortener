@@ -16,11 +16,6 @@ Docker and Docker Compose
 
 Goose (migrations) - [installation guide](https://github.com/pressly/goose)
 
-Fast command
-```
-go install github.com/pressly/goose/v3/cmd/goose@latest
-```
-
 ## Quick Start
 
 - Start the Database
@@ -38,7 +33,7 @@ goose -dir=db/migrations postgres "postgres://user:password@localhost:54302/shor
 - Start the Application
 
 ```
- cmd/main.go
+go run cmd/main.go
 ```
 
 
