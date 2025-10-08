@@ -35,14 +35,14 @@ func (m *MockRepository) IncrementVisits(ctx context.Context, shortenUrl string)
 func TestCreateLink(t *testing.T) {
 	testCases := []struct {
 		name           string
-		input          model.CreateLinkRequest
+		input          model.CreateLinkInput
 		repo           func(*MockRepository)
 		expectedResult *model.Link
 		expectedError  error
 	}{
 		{
 			name: "return success result after 1 attempt",
-			input: model.CreateLinkRequest{
+			input: model.CreateLinkInput{
 				OriginalUrl: "https://google.com",
 			},
 			repo: func(mr *MockRepository) {
@@ -61,7 +61,7 @@ func TestCreateLink(t *testing.T) {
 		},
 		{
 			name: "return success result after 2 attempts (collision)",
-			input: model.CreateLinkRequest{
+			input: model.CreateLinkInput{
 				OriginalUrl: "https://google.com",
 			},
 			repo: func(mr *MockRepository) {
@@ -84,7 +84,7 @@ func TestCreateLink(t *testing.T) {
 		},
 		{
 			name: "3 failed attempts due to collisions",
-			input: model.CreateLinkRequest{
+			input: model.CreateLinkInput{
 				OriginalUrl: "https://google.com",
 			},
 			repo: func(mr *MockRepository) {
@@ -97,7 +97,7 @@ func TestCreateLink(t *testing.T) {
 		},
 		{
 			name: "return other repository error",
-			input: model.CreateLinkRequest{
+			input: model.CreateLinkInput{
 				OriginalUrl: "https://google.com",
 			},
 			repo: func(mr *MockRepository) {

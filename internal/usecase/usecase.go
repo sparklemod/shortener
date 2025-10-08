@@ -17,7 +17,7 @@ func New(repo Repository) *Usecase {
 	return &Usecase{repo: repo}
 }
 
-func (uc *Usecase) CreateLink(ctx context.Context, in model.CreateLinkRequest) (*model.Link, error) {
+func (uc *Usecase) CreateLink(ctx context.Context, in model.CreateLinkInput) (*model.Link, error) {
 	for attempts := 3; attempts > 0; attempts-- {
 		shortenUrl, err := utils.GenerateShortLink(ShortenLength)
 		if err != nil {

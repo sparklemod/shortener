@@ -38,7 +38,6 @@ func New(uc UseCase, cfg *config.Config) *HttpServer {
 	s := &HttpServer{
 		validate: validator.New(),
 		uc:       uc,
-		//router:   r,
 		srv: &http.Server{
 			Addr:    addr,
 			Handler: gin.Default(),

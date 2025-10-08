@@ -5,7 +5,6 @@ type RequestStatus struct {
 	Description string `json:"description"`
 }
 
-// todo тест при котором нет урла
 type CreateLinkRequest struct {
 	Url string `json:"url" validate:"required,url"`
 }

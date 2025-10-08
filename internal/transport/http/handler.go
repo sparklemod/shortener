@@ -35,7 +35,7 @@ func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {
 		return
 	}
 
-	link, err := srv.uc.CreateLink(c, model.CreateLinkRequest{
+	link, err := srv.uc.CreateLink(c, model.CreateLinkInput{
 		OriginalUrl: reqData.Url,
 	})
 	if err != nil {

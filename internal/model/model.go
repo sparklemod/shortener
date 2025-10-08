@@ -22,6 +22,6 @@ type Link struct {
 	UpdatedAt   time.Time `db:"updated_at"`
 }
 
-type CreateLinkRequest struct {
+type CreateLinkInput struct {
 	OriginalUrl string
 }
