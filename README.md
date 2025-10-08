@@ -1,11 +1,46 @@
-# shortener
+# Shortener
 
-/internal/
-    /repository/
-        /domain/     ← модели бизнес-сущностей (Link)
-        /postgres/   ← реализация интерфейсов (SQL)
-    /usecase/
-        usecase.go   ← бизнес-логика (сценарии)
-        contract.go  ← интерфейс Repository
-        /dto/        ← DTO запросов/ответов
-    /transport/      ← HTTP
+A service for shortening links and collecting click-through statistics
+
+### Features
+
+- Clean Architecture
+- Gracefully shutdown
+- Table-driven testing, integration tests
+- PostgreSQL DB
+- Goose Migrations
+
+## Prerequisites
+
+Docker and Docker Compose
+
+Goose (migrations) - [installation guide](https://github.com/pressly/goose)
+
+Fast command
+```
+go install github.com/pressly/goose/v3/cmd/goose@latest
+```
+
+## Quick Start
+
+- Start the Database
+
+```
+docker-compose up -d --build
+```
+
+- Run Migrations
+
+```
+goose -dir=db/migrations postgres "postgres://user:password@localhost:54302/shortener?sslmode=disable" up
+```
+
+- Start the Application
+
+```
+ cmd/main.go
+```
+
+
+## API Testing
+After starting the application, you can test API endpoints using the [http.http](http.http) file.
