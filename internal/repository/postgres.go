@@ -6,7 +6,6 @@ import (
 	"log"
 	adapterpg "shortener/internal/adapter/postgres"
 	"shortener/internal/model"
-	"time"
 
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4"
@@ -74,32 +73,4 @@ func (p *Postgres) IncrementVisits(ctx context.Context, shortenUrl string) error
 	}
 
 	return nil
-}
-
-type pgShortening struct {
-	Identifier  int       `bson:"_id"`
-	OriginalURL string    `bson:"original_url"`
-	Visits      int       `bson:"visits"`
-	CreatedAt   time.Time `bson:"created_at"`
-	UpdatedAt   time.Time `bson:"updated_at"`
-}
-
-func pgShorteningFromModel(shortening model.Link) pgShortening {
-	return pgShortening{
-		Identifier:  shortening.Id,
-		OriginalURL: shortening.OriginalUrl,
-		Visits:      shortening.Visits,
-		CreatedAt:   shortening.CreatedAt,
-		UpdatedAt:   shortening.UpdatedAt,
-	}
-}
-
-func modelShorteningFromPg(shortening pgShortening) *model.Link {
-	return &model.Link{
-		Id:          shortening.Identifier,
-		OriginalUrl: shortening.OriginalURL,
-		Visits:      shortening.Visits,
-		CreatedAt:   shortening.CreatedAt,
-		UpdatedAt:   shortening.UpdatedAt,
-	}
 }
