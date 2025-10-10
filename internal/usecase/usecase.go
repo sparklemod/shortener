@@ -17,6 +17,15 @@ func New(repo Repository) *Usecase {
 	return &Usecase{repo: repo}
 }
 
+func (uc *Usecase) FilterLinks(ctx context.Context, filters model.FilterLinksInput) ([]model.Link, error) {
+	links, err := uc.repo.FilterLinks(ctx, filters)
+	if err != nil {
+		return nil, err
+	}
+
+	return links, nil
+}
+
 func (uc *Usecase) CreateLink(ctx context.Context, in model.CreateLinkInput) (*model.Link, error) {
 	for attempts := 3; attempts > 0; attempts-- {
 		shortenUrl, err := utils.GenerateShortLink(ShortenLength)

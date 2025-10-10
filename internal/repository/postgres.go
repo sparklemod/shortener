@@ -3,9 +3,11 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	adapterpg "shortener/internal/adapter/postgres"
 	"shortener/internal/model"
+	"strings"
 
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v4"
@@ -73,4 +75,65 @@ func (p *Postgres) IncrementVisits(ctx context.Context, shortenUrl string) error
 	}
 
 	return nil
+}
+
+func (p *Postgres) FilterLinks(ctx context.Context, f model.FilterLinksInput) ([]model.Link, error) {
+	query := `
+		SELECT id, original_url, shorten_url, visits, is_active
+		FROM links
+	`
+	where := []string{}
+	args := []interface{}{}
+	i := 1
+
+	if f.IsActive != nil {
+		where = append(where, fmt.Sprintf("is_active = $%d", i))
+		args = append(args, *f.IsActive)
+		i++
+	}
+
+	if len(where) > 0 {
+		query += " WHERE " + strings.Join(where, " AND ")
+	}
+
+	sortField := "original_url"
+	switch f.SortBy {
+	case "visits":
+		sortField = "visits"
+	}
+
+	sortOrder := "ASC"
+	if strings.ToUpper(f.SortOrder) == "DESC" {
+		sortOrder = "DESC"
+	}
+
+	query += fmt.Sprintf(" ORDER BY %s %s", sortField, sortOrder)
+
+	if f.Limit > 0 {
+		query += fmt.Sprintf(" LIMIT $%d", i)
+		args = append(args, f.Limit)
+		i++
+	}
+	if f.Offset > 0 {
+		query += fmt.Sprintf(" OFFSET $%d", i)
+		args = append(args, f.Offset)
+		i++
+	}
+
+	rows, err := p.conn.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var links []model.Link
+	for rows.Next() {
+		var l model.Link
+		if err := rows.Scan(&l.Id, &l.OriginalUrl, &l.ShortenUrl, &l.Visits, &l.IsActive); err != nil {
+			return nil, err
+		}
+		links = append(links, l)
+	}
+
+	return links, rows.Err()
 }

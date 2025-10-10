@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (srv *HttpServer) ParseData(c *gin.Context, data any) error {
-	if err := c.ShouldBindJSON(data); err != nil {
+func (srv *HttpServer) ParseQuery(c *gin.Context, data any) error {
+	if err := c.ShouldBindQuery(data); err != nil {
 		c.JSON(http.StatusBadRequest,
 			RequestStatus{
 				Status:      http.StatusBadRequest,
-				Description: "no correct body",
+				Description: "incorrect query params",
 			})
 		return err
 	}
@@ -27,6 +27,48 @@ func (srv *HttpServer) ParseData(c *gin.Context, data any) error {
 		return err
 	}
 	return nil
+}
+
+func (srv *HttpServer) ParseData(c *gin.Context, data any) error {
+	if err := c.ShouldBindJSON(data); err != nil {
+		c.JSON(http.StatusBadRequest,
+			RequestStatus{
+				Status:      http.StatusBadRequest,
+				Description: "incorrect body request",
+			})
+		return err
+	}
+	if err := srv.validate.Struct(data); err != nil {
+		c.JSON(http.StatusBadRequest,
+			RequestStatus{
+				Status:      http.StatusBadRequest,
+				Description: err.Error(),
+			})
+		return err
+	}
+	return nil
+}
+
+func (srv *HttpServer) GetLinksHandler(c *gin.Context) {
+	var filter FilterLinksRequest
+	if err := srv.ParseQuery(c, &filter); err != nil {
+		return
+	}
+
+	links, err := srv.uc.FilterLinks(c, model.FilterLinksInput{
+		IsActive:  filter.IsActive,
+		SortBy:    filter.SortBy,
+		SortOrder: filter.SortOrder,
+		Limit:     filter.Limit,
+		Offset:    filter.Offset,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,
+			RequestStatus{Status: http.StatusInternalServerError, Description: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, links)
 }
 
 func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {

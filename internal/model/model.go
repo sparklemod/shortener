@@ -25,3 +25,11 @@ type Link struct {
 type CreateLinkInput struct {
 	OriginalUrl string
 }
+
+type FilterLinksInput struct {
+	IsActive  *bool `db:"is_active"`
+	SortBy    string
+	SortOrder string
+	Limit     int
+	Offset    int
+}
