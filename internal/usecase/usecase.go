@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"shortener/internal/model"
-	"shortener/utils"
+	"shortener/internal/utils"
 )
 
 const ShortenLength = 8
