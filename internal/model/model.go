@@ -27,9 +27,10 @@ type CreateLinkInput struct {
 }
 
 type FilterLinksInput struct {
-	IsActive  *bool `db:"is_active"`
-	SortBy    string
-	SortOrder string
-	Limit     int
-	Offset    int
+	IsActive   *bool   `db:"is_active"`
+	ShortenUrl *string `db:"shorten_url"`
+	SortBy     string
+	SortOrder  string
+	Limit      int
+	Offset     int
 }

@@ -42,23 +42,23 @@ func (p *Postgres) Post(ctx context.Context, link model.Link) (*model.Link, erro
 	return &result, nil
 }
 
-func (p *Postgres) Get(ctx context.Context, shortenUrl string) (string, error) {
+func (p *Postgres) Get(ctx context.Context, shortenUrl string) (*model.Link, error) {
 	const query = `
-		SELECT original_url FROM links 
+		SELECT * FROM links 
 		WHERE shorten_url = $1
 	`
-	var result string
-	err := p.conn.Pool.QueryRow(ctx, query, shortenUrl).Scan(&result)
+	var result model.Link
+	err := pgxscan.Get(ctx, p.conn.Pool, &result, query, shortenUrl)
 
 	if errors.Is(err, pgx.ErrNoRows) {
-		return "", model.ErrorNotFound
+		return nil, model.ErrorNonUniq
 	}
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return result, nil
+	return &result, nil
 }
 
 func (p *Postgres) IncrementVisits(ctx context.Context, shortenUrl string) error {
@@ -92,6 +92,12 @@ func (p *Postgres) FilterLinks(ctx context.Context, f model.FilterLinksInput) ([
 		i++
 	}
 
+	if f.ShortenUrl != nil {
+		where = append(where, fmt.Sprintf("shorten_url = $%d", i))
+		args = append(args, *f.ShortenUrl)
+		i++
+	}
+
 	if len(where) > 0 {
 		query += " WHERE " + strings.Join(where, " AND ")
 	}
@@ -120,11 +126,10 @@ func (p *Postgres) FilterLinks(ctx context.Context, f model.FilterLinksInput) ([
 		i++
 	}
 
-	rows, err := p.conn.Query(ctx, query, args...)
+	rows, err := p.conn.Pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	var links []model.Link
 	for rows.Next() {

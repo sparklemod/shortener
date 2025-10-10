@@ -9,58 +9,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (srv *HttpServer) ParseQuery(c *gin.Context, data any) error {
-	if err := c.ShouldBindQuery(data); err != nil {
-		c.JSON(http.StatusBadRequest,
-			RequestStatus{
-				Status:      http.StatusBadRequest,
-				Description: "incorrect query params",
-			})
-		return err
-	}
-	if err := srv.validate.Struct(data); err != nil {
-		c.JSON(http.StatusBadRequest,
-			RequestStatus{
-				Status:      http.StatusBadRequest,
-				Description: err.Error(),
-			})
-		return err
-	}
-	return nil
-}
-
-func (srv *HttpServer) ParseData(c *gin.Context, data any) error {
-	if err := c.ShouldBindJSON(data); err != nil {
-		c.JSON(http.StatusBadRequest,
-			RequestStatus{
-				Status:      http.StatusBadRequest,
-				Description: "incorrect body request",
-			})
-		return err
-	}
-	if err := srv.validate.Struct(data); err != nil {
-		c.JSON(http.StatusBadRequest,
-			RequestStatus{
-				Status:      http.StatusBadRequest,
-				Description: err.Error(),
-			})
-		return err
-	}
-	return nil
-}
-
 func (srv *HttpServer) GetLinksHandler(c *gin.Context) {
 	var filter FilterLinksRequest
-	if err := srv.ParseQuery(c, &filter); err != nil {
+	if err := srv.parseQuery(c, &filter); err != nil {
 		return
 	}
 
 	links, err := srv.uc.FilterLinks(c, model.FilterLinksInput{
-		IsActive:  filter.IsActive,
-		SortBy:    filter.SortBy,
-		SortOrder: filter.SortOrder,
-		Limit:     filter.Limit,
-		Offset:    filter.Offset,
+		IsActive:   filter.IsActive,
+		ShortenUrl: filter.ShortenUrl,
+		SortBy:     filter.SortBy,
+		SortOrder:  filter.SortOrder,
+		Limit:      filter.Limit,
+		Offset:     filter.Offset,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError,
@@ -73,7 +34,7 @@ func (srv *HttpServer) GetLinksHandler(c *gin.Context) {
 
 func (srv *HttpServer) CreateLinkHandler(c *gin.Context) {
 	var reqData CreateLinkRequest
-	if err := srv.ParseData(c, &reqData); err != nil {
+	if err := srv.parseData(c, &reqData); err != nil {
 		return
 	}
 
@@ -124,4 +85,44 @@ func (srv *HttpServer) RedirectHandler(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusMovedPermanently, redirectUrl)
+}
+
+func (srv *HttpServer) parseQuery(c *gin.Context, data any) error {
+	if err := c.ShouldBindQuery(data); err != nil {
+		c.JSON(http.StatusBadRequest,
+			RequestStatus{
+				Status:      http.StatusBadRequest,
+				Description: "incorrect query params",
+			})
+		return err
+	}
+	if err := srv.validate.Struct(data); err != nil {
+		c.JSON(http.StatusBadRequest,
+			RequestStatus{
+				Status:      http.StatusBadRequest,
+				Description: err.Error(),
+			})
+		return err
+	}
+	return nil
+}
+
+func (srv *HttpServer) parseData(c *gin.Context, data any) error {
+	if err := c.ShouldBindJSON(data); err != nil {
+		c.JSON(http.StatusBadRequest,
+			RequestStatus{
+				Status:      http.StatusBadRequest,
+				Description: "incorrect body request",
+			})
+		return err
+	}
+	if err := srv.validate.Struct(data); err != nil {
+		c.JSON(http.StatusBadRequest,
+			RequestStatus{
+				Status:      http.StatusBadRequest,
+				Description: err.Error(),
+			})
+		return err
+	}
+	return nil
 }

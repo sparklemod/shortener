@@ -22,9 +22,12 @@ func (m *MockRepository) Post(ctx context.Context, link model.Link) (*model.Link
 	return args.Get(0).(*model.Link), args.Error(1)
 }
 
-func (m *MockRepository) Get(ctx context.Context, shortenUrl string) (string, error) {
+func (m *MockRepository) Get(ctx context.Context, shortenUrl string) (*model.Link, error) {
 	args := m.Called(ctx, shortenUrl)
-	return args.String(0), args.Error(1)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*model.Link), args.Error(1)
 }
 
 func (m *MockRepository) FilterLinks(ctx context.Context, f model.FilterLinksInput) ([]model.Link, error) {
@@ -152,7 +155,11 @@ func TestRedirect(t *testing.T) {
 			name:       "success redirect",
 			shortenUrl: "abc123de",
 			setupMocks: func(mr *MockRepository) {
-				mr.On("Get", mock.Anything, "abc123de").Return("https://google.com", nil).Once()
+				mr.On("Get", mock.Anything, "abc123de").Return(&model.Link{
+					OriginalUrl: "https://google.com",
+					ShortenUrl:  "abc123de",
+					IsActive:    true,
+				}, nil).Once()
 				mr.On("IncrementVisits", mock.Anything, "abc123de").Return(nil).Once()
 			},
 			expectedResult: "https://google.com",
@@ -162,7 +169,7 @@ func TestRedirect(t *testing.T) {
 			name:       "return ErrorNotFound",
 			shortenUrl: "nonexistent",
 			setupMocks: func(mr *MockRepository) {
-				mr.On("Get", mock.Anything, "nonexistent").Return("", model.ErrorNotFound).Once()
+				mr.On("Get", mock.Anything, "nonexistent").Return(nil, model.ErrorNotFound).Once()
 			},
 			expectedResult: "",
 			expectedError:  model.ErrorNotFound,
@@ -171,7 +178,11 @@ func TestRedirect(t *testing.T) {
 			name:       "return OK if ErrorIncrementVisits only",
 			shortenUrl: "abc123de",
 			setupMocks: func(mr *MockRepository) {
-				mr.On("Get", mock.Anything, "abc123de").Return("https://google.com", nil).Once()
+				mr.On("Get", mock.Anything, "abc123de").Return(&model.Link{
+					OriginalUrl: "https://google.com",
+					ShortenUrl:  "abc123de",
+					IsActive:    true,
+				}, nil).Once()
 				mr.On("IncrementVisits", mock.Anything, "abc123de").Return(model.ErrorIncrementVisits).Once()
 			},
 			expectedResult: "https://google.com",

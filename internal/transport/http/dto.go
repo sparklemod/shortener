@@ -19,9 +19,10 @@ type CreateLinkResponse struct {
 }
 
 type FilterLinksRequest struct {
-	IsActive  *bool  `form:"is_active"`
-	SortBy    string `form:"sort_by"`
-	SortOrder string `form:"sort_order"`
-	Limit     int    `form:"limit"`
-	Offset    int    `form:"offset"`
+	IsActive   *bool   `form:"is_active"`
+	ShortenUrl *string `form:"shorten_url"`
+	SortBy     string  `form:"sort_by"`
+	SortOrder  string  `form:"sort_order"`
+	Limit      int     `form:"limit"`
+	Offset     int     `form:"offset"`
 }

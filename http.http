@@ -11,5 +11,5 @@ GET http://localhost:8080/api/v1/links/MEWooaGf
 Content-Type: application/json
 
 ### GET /api/v1/links
-GET http://localhost:8080/api/v1/links?is_active=true&sort_by=visits&sort_order=desc
+GET http://localhost:8080/api/v1/links?is_active=true&shorten_url=UmCbDe28&sort_by=visits&sort_order=desc
 Content-Type: application/json

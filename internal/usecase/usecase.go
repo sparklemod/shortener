@@ -61,5 +61,5 @@ func (uc *Usecase) Redirect(ctx context.Context, shortenUrl string) (string, err
 
 	uc.repo.IncrementVisits(ctx, shortenUrl)
 
-	return shortening, nil
+	return shortening.OriginalUrl, nil
 }
