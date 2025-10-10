@@ -27,6 +27,11 @@ func (m *MockRepository) Get(ctx context.Context, shortenUrl string) (string, er
 	return args.String(0), args.Error(1)
 }
 
+func (m *MockRepository) FilterLinks(ctx context.Context, f model.FilterLinksInput) ([]model.Link, error) {
+	args := m.Called(ctx, f)
+	return args.Get(0).([]model.Link), args.Error(1)
+}
+
 func (m *MockRepository) IncrementVisits(ctx context.Context, shortenUrl string) error {
 	args := m.Called(ctx, shortenUrl)
 	return args.Error(0)
