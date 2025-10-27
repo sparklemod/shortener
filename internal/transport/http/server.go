@@ -27,10 +27,8 @@ func (h *HttpServer) Run() {
 	}()
 }
 
-func (h *HttpServer) Stop(shutdownCtx context.Context) {
-	if err := h.srv.Shutdown(shutdownCtx); err != nil {
-		log.Fatalf("error closing server: %v", err)
-	}
+func (h *HttpServer) Stop(shutdownCtx context.Context) error {
+	return h.srv.Shutdown(shutdownCtx)
 }
 
 func New(uc UseCase, cfg *config.Config) *HttpServer {

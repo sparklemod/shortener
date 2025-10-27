@@ -36,6 +36,7 @@ func (uc *Usecase) CreateLink(ctx context.Context, in model.CreateLinkInput) (*m
 		inputLink := model.Link{
 			OriginalUrl: in.OriginalUrl,
 			ShortenUrl:  shortenUrl,
+			IsActive:    true,
 		}
 
 		link, err := uc.repo.Post(ctx, inputLink)

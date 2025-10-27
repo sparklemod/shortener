@@ -36,8 +36,10 @@ func (pg *Postgres) Connect(ctx context.Context) error {
 	return nil
 }
 
-func (pg *Postgres) Close() {
+func (pg *Postgres) Close(ctx context.Context) error {
 	if pg.Pool != nil {
 		pg.Pool.Close()
 	}
+
+	return nil
 }
