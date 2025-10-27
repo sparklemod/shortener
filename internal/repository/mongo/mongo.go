@@ -22,7 +22,7 @@ func NewMongo(conn *adaptermgo.Mongo) *Mongo {
 }
 
 func (m *Mongo) col() *mongo.Collection {
-	return m.conn.Collection("shortenings")
+	return m.conn.Collection("links")
 }
 
 func (m *Mongo) FilterLinks(ctx context.Context, f model.FilterLinksInput) ([]model.Link, error) {
