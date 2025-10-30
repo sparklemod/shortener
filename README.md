@@ -6,15 +6,9 @@ A service for shortening links and collecting click-through statistics
 
 - Clean Architecture
 - Gracefully shutdown
-- Table-driven testing, integration tests
-- PostgreSQL DB
+- Unit tests
+- PostgreSQL/MongoDB (choose in config)
 - Goose Migrations
-
-## Prerequisites
-
-Docker and Docker Compose
-
-Goose (migrations) - [installation guide](https://github.com/pressly/goose)
 
 ## Quick Start
 
@@ -22,12 +16,6 @@ Goose (migrations) - [installation guide](https://github.com/pressly/goose)
 
 ```
 docker-compose up -d --build
-```
-
-- Run Migrations
-
-```
-goose -dir=db/migrations postgres "postgres://user:password@localhost:54302/shortener?sslmode=disable" up
 ```
 
 - Start the Application

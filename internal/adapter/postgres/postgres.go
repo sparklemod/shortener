@@ -4,6 +4,9 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/pressly/goose/v3"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type Postgres struct {
@@ -39,6 +42,20 @@ func (pg *Postgres) Connect(ctx context.Context) error {
 func (pg *Postgres) Close(ctx context.Context) error {
 	if pg.Pool != nil {
 		pg.Pool.Close()
+	}
+
+	return nil
+}
+
+func (pg *Postgres) RunMigrations(migrationsDir string) error {
+	db, err := goose.OpenDBWithDriver("postgres", pg.urlConnect)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	if err := goose.Up(db, migrationsDir); err != nil {
+		return err
 	}
 
 	return nil

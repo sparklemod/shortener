@@ -29,9 +29,15 @@ func Build(ctx context.Context, cfg *config.Config) (*App, error) {
 	switch cfg.DBType {
 	case config.Postgres:
 		db := adapterpg.New(cfg.LinksDB.PostgresUrl)
+
+		if err := db.RunMigrations(cfg.MigrationDir); err != nil {
+			return nil, err
+		}
+
 		if err := db.Connect(ctx); err != nil {
 			return nil, err
 		}
+
 		dbConn = db
 		repo = postgres.NewPostgres(db)
 

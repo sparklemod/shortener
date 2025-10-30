@@ -8,12 +8,13 @@ const (
 )
 
 type Config struct {
-	BaseURL string
-	Host    string
-	Port    int
-	DBName  string
-	LinksDB LinksDB
-	DBType  DBType
+	BaseURL      string
+	Host         string
+	Port         int
+	DBName       string
+	LinksDB      LinksDB
+	DBType       DBType
+	MigrationDir string
 }
 
 type LinksDB struct {
@@ -31,6 +32,7 @@ func NewConfig() *Config {
 			PostgresUrl: "postgres://user:password@localhost:54302/shortener?sslmode=disable",
 			MongoUrl:    "mongodb://user:password@localhost:27017/shortener?authSource=admin",
 		},
-		DBType: Mongo,
+		DBType:       Postgres,
+		MigrationDir: "db/migrations",
 	}
 }
